@@ -327,6 +327,7 @@ The S-392T-3W latching valve requires polarity reversal to change states. This s
 ### 2.9.2 Wiring Connections
 
 **Controller to Relay:**
+
 | LT-22222-L Output | Connect To | Purpose |
 |-------------------|------------|---------|
 | **RO1 COM** | +12V | Power for relay coil |
@@ -336,6 +337,7 @@ The S-392T-3W latching valve requires polarity reversal to change states. This s
 | **GND** | DPDT Relay A2 | Coil return |
 
 **Relay to Valve:**
+
 | Relay Terminal | Connect To | What It Does |
 |----------------|------------|--------------|
 | **12 (NC)** | Valve Terminal 1 | CLOSE: +12V to red wire |
