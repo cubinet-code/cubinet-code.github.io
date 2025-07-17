@@ -50,15 +50,15 @@ This document provides a complete design and implementation guide for a battery-
 
 | Component      | Model                   | Function                 | Specifications                |
 | -------------- | ----------------------- | ------------------------ | ----------------------------- |
-| **Gateway**    | LPS8v2                  | LoRaWAN Gateway + Server | Built-in ChirpStack, Node-RED |
-| **Sensor**     | SE01-LB                 | Soil Moisture/EC/Temp    | LoRaWAN, 5-year battery life  |
-| **Controller** | LT-22222-L              | I/O Control + LoRaWAN    | 4mA sleep, relay output       |
-| **Relay**      | Finder 55.34.9.012.0040 | DPDT Polarity Switching  | 12V coil, 5A contacts         |
-| **Socket**     | Finder 94.04            | Relay Socket             | For 55.34 series relays       |
-| **Suppressor** | Finder 99.02.9.024.99   | EMC Suppression          | For relay coil protection     |
-| **Valve**      | S-392T-3W               | 3-Way Latching Solenoid  | 2-wire polarity-controlled    |
-| **Battery**    | Powery 12V 9Ah          | AGM/Gel UPS Standard     | 108Wh capacity                |
-| **Solar**      | WATTSTUNDE WS10-M       | 10Wp Monocrystalline     | 40Wh/day, essential for 9Ah   |
+| **Gateway**    | [LPS8v2](https://www.dragino.com/products/lora-lorawan-gateway/item/228-lps8v2.html) | LoRaWAN Gateway + Server | Built-in ChirpStack, Node-RED |
+| **Sensor**     | [SE01-LB](https://www.dragino.com/products/agriculture-weather-station/item/277-se01-lb.html) | Soil Moisture/EC/Temp    | LoRaWAN, 5-year battery life  |
+| **Controller** | [LT-22222-L](https://www.dragino.com/products/lora-lorawan-end-node/item/156-lt-22222-l.html) | I/O Control + LoRaWAN    | 4mA sleep, relay output       |
+| **Relay**      | [Finder 55.34.9.012.0040](https://de.rs-online.com/web/p/elektrische-relais/0385913) | DPDT Polarity Switching  | 12V coil, 5A contacts         |
+| **Socket**     | [Finder 94.04](https://de.rs-online.com/web/p/relaissockel/4009146) | Relay Socket             | For 55.34 series relays       |
+| **Suppressor** | [Finder 99.02.9.024.99](https://de.rs-online.com/web/p/steckbare-funktionsmodule/6668015) | EMC Suppression          | For relay coil protection     |
+| **Valve**      | [S-392T-3W](https://www.bermad.com/product/s-392t-3w/) | 3-Way Latching Solenoid  | 2-wire polarity-controlled    |
+| **Battery**    | [Powery 12V 9Ah](https://de.rs-online.com/web/p/bleiakkus/1748858) | AGM/Gel UPS Standard     | 108Wh capacity                |
+| **Solar**      | [WATTSTUNDE WS10-M](https://solarkontor.de/10W-Solar-Inselanlage-Bausatz-WATTSTUNDE-3A-Solar-Laderegler-PEKO3) | 10Wp Monocrystalline     | 40Wh/day, essential for 9Ah   |
 
 ## 2. Hardware Specifications
 
