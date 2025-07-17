@@ -902,23 +902,23 @@ tailscale up --advertise-routes=192.168.1.0/24 --accept-routes
 ### 7.1 Preventive Maintenance Schedule
 
 **Monthly (Remote):**
-□ Check battery voltages via dashboard
-□ Verify LoRaWAN connectivity (all devices)
-□ Review irrigation logs and anomalies
-□ Test manual valve controls
+- [ ] Check battery voltages via dashboard
+- [ ] Verify LoRaWAN connectivity (all devices)
+- [ ] Review irrigation logs and anomalies
+- [ ] Test manual valve controls
 
 **Quarterly (Field Visit):**
-□ Clean solar panels
-□ Inspect weatherproof enclosures
-□ Test valve operation manually
-□ Calibrate soil moisture sensors
-□ Check cable connections
+- [ ] Clean solar panels
+- [ ] Inspect weatherproof enclosures
+- [ ] Test valve operation manually
+- [ ] Calibrate soil moisture sensors
+- [ ] Check cable connections
 
 **Annually (Professional Service):**
-□ Replace valve O-rings and seals
-□ Test system under full pressure
-□ Update firmware on all devices
-□ Performance optimization review
+- [ ] Replace valve O-rings and seals
+- [ ] Test system under full pressure
+- [ ] Update firmware on all devices
+- [ ] Performance optimization review
 
 ### 7.2 Common Issues and Solutions
 
