@@ -374,14 +374,16 @@ Byte 3: Duration (0xC8 = 200ms, 0x32 = 50ms)
 
 ```
 Open Valve (Irrigation):
-- Step 1: Set polarity - Hex: 020101C8 (RO1 ON for 200ms)
+- Step 1: Set polarity - Hex: 020101FF (RO1 ON indefinitely)
 - Step 2: Send pulse - Hex: 020201C8 (RO2 ON for 200ms)
+- Step 3: Reset polarity - Hex: 020100C8 (RO1 OFF for 200ms) [MANDATORY - saves power]
 - Function: RO1 sets polarity, RO2 provides pulse → Terminal 1 = GND, Terminal 2 = +12V → OPEN
 - Result: Valve switches to irrigation position, then no voltage
 
 Close Valve (Bypass):
-- Step 1: Set polarity - Hex: 020100C8 (RO1 OFF for 200ms)
+- Step 1: Set polarity - Hex: 020100FF (RO1 OFF indefinitely)
 - Step 2: Send pulse - Hex: 020201C8 (RO2 ON for 200ms)
+- Step 3: Reset polarity - Hex: 020100C8 (RO1 OFF for 200ms) [MANDATORY - saves power]
 - Function: RO1 sets polarity, RO2 provides pulse → Terminal 1 = +12V, Terminal 2 = GND → CLOSE
 - Result: Valve switches to bypass position, then no voltage
 
@@ -393,10 +395,11 @@ Status Query:
 **Verification Commands (AT Interface):**
 
 ```
-AT+RO1TIME=200    # Set RO1 pulse duration to 200ms
+AT+RO1TIME=65535  # Set RO1 to maximum duration (indefinite)
 AT+RO2TIME=200    # Set RO2 pulse duration to 200ms
-AT+RO1=1          # Test RO1 activation (OPEN valve - pulse only)
-AT+RO2=1          # Test RO2 activation (CLOSE valve - pulse only)
+AT+RO1=1          # Test RO1 activation (set polarity - stays ON)
+AT+RO1=0          # Test RO1 deactivation (reset polarity)
+AT+RO2=1          # Test RO2 activation (valve pulse - 200ms only)
 AT+STATUS         # Check current relay states
 ```
 
@@ -411,23 +414,26 @@ AT+STATUS         # Check current relay states
 2. Circuit Verification:
    - Connect multimeter across valve terminals
    - Default state: Both relays OFF → No voltage (0V across terminals)
-   - Test CLOSE: AT+RO1=0, then AT+RO2=1
+   - Test CLOSE: AT+RO1=0 (set polarity), then AT+RO2=1 (pulse)
    - Verify: Terminal 1 = +12V, Terminal 2 = GND for 200ms, then 0V
-   - Test OPEN: AT+RO1=1, then AT+RO2=1
+   - Test OPEN: AT+RO1=1 (set polarity), then AT+RO2=1 (pulse)
    - Verify: Terminal 1 = GND, Terminal 2 = +12V for 200ms, then 0V
+   - MANDATORY: AT+RO1=0 to reset polarity after each test (saves power)
 
 3. Functional Testing:
    - Start with valve in known position
-   - Send CLOSE sequence: RO1 OFF + RO2 pulse → Valve to bypass position
-   - Send OPEN sequence: RO1 ON + RO2 pulse → Valve to irrigation position
+   - Send CLOSE sequence: RO1 OFF (polarity) + RO2 pulse → Valve to bypass position
+   - Send OPEN sequence: RO1 ON (polarity) + RO2 pulse → Valve to irrigation position
    - Verify water flow direction matches expected operation
    - Confirm valve maintains position after pulse (no continuous power)
+   - MANDATORY: Reset polarity after each operation: AT+RO1=0 (saves power)
 
 4. Current Monitoring:
-   - Monitor pulse current: Should be ~2A for 200ms during RO2 pulse
-   - Verify no continuous current after pulse (critical for latching valve)
+   - Monitor pulse current: Should be ~2A for 200ms during RO2 pulse only
+   - RO1 current should be minimal (~25mA for relay coil)
+   - Verify no continuous current to valve after RO2 pulse
    - Check fuse integrity after multiple operations
-   - Ensure both relays return to OFF state after pulse
+   - Ensure RO2 returns to OFF state after pulse, RO1 MUST be reset to OFF to save power
 ```
 
 ## 3. Installation Procedures
@@ -515,8 +521,13 @@ Step 4: SE01-LB Sensor Installation
 - Verify data reception in gateway dashboard
 
 Step 5: System Testing
-- Test valve operation: AT+RO1=1 (activate relay 1 for OPEN), AT+RO2=1 (activate relay 2 for CLOSE)
-- For 3-way valve: RO1 pulse = irrigation, RO2 pulse = bypass
+- Configure AT commands for improved valve control:
+  AT+RO1TIME=65535  # Set RO1 to indefinite duration
+  AT+RO2TIME=200    # Set RO2 to 200ms pulse
+- Test valve operation sequence:
+  OPEN: AT+RO1=1 (set polarity), AT+RO2=1 (pulse valve), AT+RO1=0 (reset)
+  CLOSE: AT+RO1=0 (set polarity), AT+RO2=1 (pulse valve), AT+RO1=0 (reset)
+- For 3-way valve: RO1 state controls polarity, RO2 pulse activates valve
 - Verify water flow in both positions
 - Check LoRaWAN connectivity (RSSI > -100dBm)
 - Monitor battery voltage and charging
@@ -584,11 +595,11 @@ var dry_threshold = 30;    // Start irrigation at 30%
 var wet_threshold = 70;    // Stop irrigation at 70%
 
 if (moisture < dry_threshold && valve_status !== "OPEN") {
-    // Open valve - two-step process: set polarity then pulse
+    // Open valve - improved three-step process: set polarity, pulse, optional reset
     var polarityCmd = {
         payload: {
             fPort: 2,
-            data: "020101C8"  // RO1 on, 200ms pulse - set polarity for OPEN
+            data: "020101FF"  // RO1 on indefinitely - set polarity for OPEN
         },
         topic: "application/irrigation/device/" + zone + "/tx"
     };
@@ -603,7 +614,19 @@ if (moisture < dry_threshold && valve_status !== "OPEN") {
             topic: "application/irrigation/device/" + zone + "/tx"
         };
         node.send(pulseCmd);
-    }, 500); // 500ms delay between commands
+        
+        // MANDATORY: Reset polarity after valve activation to save power
+        setTimeout(function() {
+            var resetCmd = {
+                payload: {
+                    fPort: 2,
+                    data: "020100C8"  // RO1 off, 200ms - reset polarity to save power
+                },
+                topic: "application/irrigation/device/" + zone + "/tx"
+            };
+            node.send(resetCmd);
+        }, 1000); // 1000ms after pulse command
+    }, 500); // 500ms delay between polarity and pulse commands
 
     context.set(zone + "_valve_status", "OPEN");
     context.set(zone + "_last_action", new Date().toISOString());
@@ -616,11 +639,11 @@ if (moisture < dry_threshold && valve_status !== "OPEN") {
     return [polarityCmd, status];
 
 } else if (moisture > wet_threshold && valve_status !== "CLOSE") {
-    // Close valve - two-step process: set polarity then pulse
+    // Close valve - improved three-step process: set polarity, pulse, optional reset
     var polarityCmd = {
         payload: {
             fPort: 2,
-            data: "020100C8"  // RO1 off, 200ms pulse - set polarity for CLOSE
+            data: "020100FF"  // RO1 off indefinitely - set polarity for CLOSE
         },
         topic: "application/irrigation/device/" + zone + "/tx"
     };
@@ -635,7 +658,19 @@ if (moisture < dry_threshold && valve_status !== "OPEN") {
             topic: "application/irrigation/device/" + zone + "/tx"
         };
         node.send(pulseCmd);
-    }, 500); // 500ms delay between commands
+        
+        // MANDATORY: Reset polarity after valve activation to save power
+        setTimeout(function() {
+            var resetCmd = {
+                payload: {
+                    fPort: 2,
+                    data: "020100C8"  // RO1 off, 200ms - reset polarity to save power
+                },
+                topic: "application/irrigation/device/" + zone + "/tx"
+            };
+            node.send(resetCmd);
+        }, 1000); // 1000ms after pulse command
+    }, 500); // 500ms delay between polarity and pulse commands
 
     context.set(zone + "_valve_status", "CLOSE");
     context.set(zone + "_last_action", new Date().toISOString());
@@ -663,7 +698,7 @@ if (command === "OPEN") {
     var polarityCmd = {
         payload: {
             fPort: 2,
-            data: "020101C8"  // RO1 on, 200ms pulse - set polarity for OPEN
+            data: "020101FF"  // RO1 on indefinitely - set polarity for OPEN
         },
         topic: "application/irrigation/device/" + zone + "/tx"
     };
@@ -678,6 +713,18 @@ if (command === "OPEN") {
             topic: "application/irrigation/device/" + zone + "/tx"
         };
         node.send(pulseCmd);
+        
+        // Step 3: MANDATORY reset polarity after valve activation to save power
+        setTimeout(function() {
+            var resetCmd = {
+                payload: {
+                    fPort: 2,
+                    data: "020100C8"  // RO1 off, 200ms - reset polarity to save power
+                },
+                topic: "application/irrigation/device/" + zone + "/tx"
+            };
+            node.send(resetCmd);
+        }, 1000); // 1000ms after pulse command
     }, 500); // 500ms delay between commands
 
     return polarityCmd;
@@ -687,7 +734,7 @@ if (command === "OPEN") {
     var polarityCmd = {
         payload: {
             fPort: 2,
-            data: "020100C8"  // RO1 off, 200ms pulse - set polarity for CLOSE
+            data: "020100FF"  // RO1 off indefinitely - set polarity for CLOSE
         },
         topic: "application/irrigation/device/" + zone + "/tx"
     };
@@ -702,6 +749,18 @@ if (command === "OPEN") {
             topic: "application/irrigation/device/" + zone + "/tx"
         };
         node.send(pulseCmd);
+        
+        // Step 3: MANDATORY reset polarity after valve activation to save power
+        setTimeout(function() {
+            var resetCmd = {
+                payload: {
+                    fPort: 2,
+                    data: "020100C8"  // RO1 off, 200ms - reset polarity to save power
+                },
+                topic: "application/irrigation/device/" + zone + "/tx"
+            };
+            node.send(resetCmd);
+        }, 1000); // 1000ms after pulse command
     }, 500); // 500ms delay between commands
 
     return polarityCmd;
@@ -863,7 +922,12 @@ Diagnostics:
 
 - Check battery voltage (should be >11V)
 - Verify LoRaWAN connectivity (RSSI)
-- Test with manual AT command: AT+RO1=1 (for relay)
+- Test with improved AT command sequence:
+  AT+RO1TIME=65535  # Set RO1 to indefinite duration
+  AT+RO2TIME=200    # Set RO2 to 200ms pulse
+  AT+RO1=1          # Set polarity
+  AT+RO2=1          # Pulse valve
+  AT+RO1=0          # Reset polarity
 
 Solutions:
 
@@ -871,6 +935,7 @@ Solutions:
 - Improve antenna position if poor signal
 - Check valve coil resistance (should be 6Ω)
 - Verify relay is clicking when activated
+- Ensure proper command sequence timing
 
 **Issue: Inconsistent soil moisture readings**
 Diagnostics:
