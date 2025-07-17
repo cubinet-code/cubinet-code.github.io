@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "Complete Design Guide"
+title: "LoRaWAN Irrigation System"
 nav_order: 2
 ---
 
@@ -48,55 +48,61 @@ This document provides a complete design and implementation guide for a battery-
 
 ### 1.2 Component Overview
 
-| Component      | Model             | Function                 | Specifications                 |
-| -------------- | ----------------- | ------------------------ | ------------------------------ |
-| **Gateway**    | LPS8v2            | LoRaWAN Gateway + Server | Built-in ChirpStack, Node-RED  |
-| **Sensor**     | SE01-LB           | Soil Moisture/EC/Temp    | LoRaWAN, 5-year battery life   |
-| **Controller** | LT-22222-L        | I/O Control + LoRaWAN    | 4mA sleep, relay output        |
-| **Relay**      | Finder 55.34.9.012.0040 | DPDT Polarity Switching | 12V coil, 5A contacts         |
-| **Socket**     | Finder 94.04      | Relay Socket             | For 55.34 series relays       |
-| **Suppressor** | Finder 99.02.9.024.99 | EMC Suppression       | For relay coil protection      |
-| **Valve**      | S-392T-3W         | 3-Way Latching Solenoid  | 2-wire polarity-controlled      |
-| **Battery**    | Powery 12V 9Ah    | AGM/Gel UPS Standard     | 108Wh capacity                  |
-| **Solar**      | WATTSTUNDE WS10-M | 10Wp Monocrystalline     | 40Wh/day, essential for 9Ah    |
+| Component      | Model                   | Function                 | Specifications                |
+| -------------- | ----------------------- | ------------------------ | ----------------------------- |
+| **Gateway**    | LPS8v2                  | LoRaWAN Gateway + Server | Built-in ChirpStack, Node-RED |
+| **Sensor**     | SE01-LB                 | Soil Moisture/EC/Temp    | LoRaWAN, 5-year battery life  |
+| **Controller** | LT-22222-L              | I/O Control + LoRaWAN    | 4mA sleep, relay output       |
+| **Relay**      | Finder 55.34.9.012.0040 | DPDT Polarity Switching  | 12V coil, 5A contacts         |
+| **Socket**     | Finder 94.04            | Relay Socket             | For 55.34 series relays       |
+| **Suppressor** | Finder 99.02.9.024.99   | EMC Suppression          | For relay coil protection     |
+| **Valve**      | S-392T-3W               | 3-Way Latching Solenoid  | 2-wire polarity-controlled    |
+| **Battery**    | Powery 12V 9Ah          | AGM/Gel UPS Standard     | 108Wh capacity                |
+| **Solar**      | WATTSTUNDE WS10-M       | 10Wp Monocrystalline     | 40Wh/day, essential for 9Ah   |
 
 ## 2. Hardware Specifications
 
 ### 2.1 Dragino SE01-LB Soil Moisture Sensor
 
 **Measurement Capabilities:**
+
 - Soil Moisture: 0-100.00 V/V % (Volumetric Water Content)
 - Soil Temperature: -40°C to 85°C
 - Soil Electrical Conductivity: 0-20,000 µS/cm
 
 **Accuracy:**
+
 - Moisture: ±3% (0-53%), ±5% (>53%)
 - Temperature: ±0.3°C (-10°C to 50°C)
 - EC: 2% full scale
 
 **Power & Battery:**
+
 - Power Source: 8500mAh Li/SOCl2 battery (replaceable)
 - Battery Life: Up to 5 years
 - Ultra-low power consumption
 - No external power required
 
 **Communication:**
+
 - LoRaWAN 1.0.3 Class A
 - Frequency: EU868, US915, AU915, AS923, etc.
 - Bluetooth v5.1 for configuration
 - Over-the-air (OTA) firmware updates
 
 **Physical:**
+
 - Dimensions: 195 x 125 x 55 mm
 - Weight: 420g
 - IP66 Waterproof enclosure
 - Operating Temperature: -40°C to 85°C
 
-*Note: SE01-LS variant available with solar panel + 3000mAh Li-ion battery*
+_Note: SE01-LS variant available with solar panel + 3000mAh Li-ion battery_
 
 ### 2.2 S-392T-3W Latching Valve
 
 **Electrical Specifications:**
+
 - Voltage Range: 9-20 VDC
 - Coil Resistance: 6Ω
 - Coil Inductance: 15/18 mH (off/on)
@@ -106,11 +112,13 @@ This document provides a complete design and implementation guide for a battery-
 - Connection: 2-wire coil control (Red/Black)
 
 **Operation Modes (electrical connections):**
+
 - **+Red & -Black:** Solenoid vents (bypass/drain position)
 - **+Black & -Red:** Solenoid pressurizes (irrigation position)
 - **No power:** Valve maintains last position (latching)
 
 **Operating Principle:**
+
 - **3-way valve** with 2-wire polarity-controlled operation
 - **Latching:** Valve maintains position after pulse without power
 - **Polarity Reversal:** Changes between vent and pressurize modes
@@ -118,6 +126,7 @@ This document provides a complete design and implementation guide for a battery-
 ### 2.3 LT-22222-L LoRaWAN Controller
 
 **Power Specifications:**
+
 - Input Voltage: 7-24V DC (using 12V)
 - Sleep Current: 4mA @ 12V (official datasheet specification)
 - Active Current: ~20mA @ 12V (brief periods)
@@ -125,6 +134,7 @@ This document provides a complete design and implementation guide for a battery-
 - Idle Power: 0.048W (4mA × 12V)
 
 **I/O Specifications:**
+
 - **Relay Outputs (RECOMMENDED):** 2x (RO1, RO2) rated 5A@250VAC/30VDC - Use for valve control
 - **Digital Outputs:** 2x (DO1, DO2) NPN type, max 450mA each - NOT suitable for valve control
 - **Output Logic:** INVERTED (DO=1 means LOW/GND, DO=0 means HIGH/floating)
@@ -133,6 +143,7 @@ This document provides a complete design and implementation guide for a battery-
 - **Analog Inputs:** 2x (0-20mA or 0-30V)
 
 **Communication:**
+
 - LoRaWAN Region: EU868
 - Range: 2-5km line of sight
 - Adaptive Data Rate: Yes
@@ -141,6 +152,7 @@ This document provides a complete design and implementation guide for a battery-
 ### 2.4 Solar Panel and Charge Controller Specifications
 
 **WATTSTUNDE WS10-M Solar Panel:**
+
 - Nominal Power (Pmpp): 10Wp
 - Module Type: Monocrystalline, 36 cells
 - Open Circuit Voltage (Voc): 21.96V
@@ -155,6 +167,7 @@ This document provides a complete design and implementation guide for a battery-
 - Features: Bypass diodes for partial shading tolerance
 
 **WATTSTUNDE PEKO3 Charge Controller:**
+
 - Type: PWM (Pulse Width Modulation) with multi-stage charging
 - Max Solar Input: 3A / 50W (12V system)
 - Max Solar Voltage: 30V
@@ -166,6 +179,7 @@ This document provides a complete design and implementation guide for a battery-
 - Weight: 50g
 
 **Protection Features:**
+
 - Overcharge protection with automatic disconnect
 - Deep discharge protection (LVD - Low Voltage Disconnect)
 - Temperature compensation for optimal charging
@@ -174,6 +188,7 @@ This document provides a complete design and implementation guide for a battery-
 - Self-test function
 
 **Load Control:**
+
 - 3A load output perfect for LT-22222-L controller
 - Automatic disconnect at low battery (LVD)
 - Automatic reconnect when battery recovers (LVR)
@@ -182,6 +197,7 @@ This document provides a complete design and implementation guide for a battery-
 ### 2.5 Powery 12V 9Ah AGM/Gel Battery
 
 **Electrical Specifications:**
+
 - Voltage: 12V
 - Capacity: 9Ah (108Wh)
 - Type: AGM/Gel sealed lead-acid
@@ -189,12 +205,14 @@ This document provides a complete design and implementation guide for a battery-
 - Cycle life: 300-500 cycles at 50% DoD
 
 **Physical Specifications:**
+
 - Dimensions: 151 x 65 x 94mm
 - Weight: ~2.5kg
 - Terminals: Faston F2 6.4mm
 - Position: Any orientation (sealed)
 
 **Key Advantages:**
+
 - Standard UPS battery format (widely available)
 - Multiple manufacturers (APC, CSB, Yuasa, etc.)
 - Lower cost than LiFePO4
@@ -203,25 +221,26 @@ This document provides a complete design and implementation guide for a battery-
 
 ### 2.6 System Voltage Reference Table
 
-| Component | Voltage Specification | Purpose |
-|-----------|----------------------|---------|
-| **S-392T-3W Valve** | 9-20V DC | Operating voltage range |
-| **LT-22222-L Controller** | 7-24V DC input | Power supply range |
-| **PEKO3 Charge Controller** | | |
-| - Solar input | Up to 30V | Maximum PV voltage |
-| - Battery range | 6-30V | Compatible battery voltages |
-| - Bulk charge | 14.4V | AGM/Gel charging voltage |
-| - Float charge | 13.8V | Maintenance voltage |
-| - LVD cutoff | 11.1V | Low voltage disconnect |
-| - LVR reconnect | 12.6V | Load reconnect voltage |
-| **System Operation** | | |
-| - Normal operation | 12.6-13.8V | Typical operating range |
-| - Minimum valve voltage | 11.6V | At 50m cable (with drop) |
-| - Maximum safe voltage | 15V | Component protection limit |
+| Component                   | Voltage Specification | Purpose                     |
+| --------------------------- | --------------------- | --------------------------- |
+| **S-392T-3W Valve**         | 9-20V DC              | Operating voltage range     |
+| **LT-22222-L Controller**   | 7-24V DC input        | Power supply range          |
+| **PEKO3 Charge Controller** |                       |                             |
+| - Solar input               | Up to 30V             | Maximum PV voltage          |
+| - Battery range             | 6-30V                 | Compatible battery voltages |
+| - Bulk charge               | 14.4V                 | AGM/Gel charging voltage    |
+| - Float charge              | 13.8V                 | Maintenance voltage         |
+| - LVD cutoff                | 11.1V                 | Low voltage disconnect      |
+| - LVR reconnect             | 12.6V                 | Load reconnect voltage      |
+| **System Operation**        |                       |                             |
+| - Normal operation          | 12.6-13.8V            | Typical operating range     |
+| - Minimum valve voltage     | 11.6V                 | At 50m cable (with drop)    |
+| - Maximum safe voltage      | 15V                   | Component protection limit  |
 
 ### 2.7 Charging System Compatibility
 
 **PEKO3 + Powery AGM/Gel Battery:**
+
 - PEKO3 designed for lead-acid batteries (perfect match)
 - Multi-stage PWM charging optimizes battery life
 - Temperature compensation adjusts for ambient conditions
@@ -232,6 +251,7 @@ This document provides a complete design and implementation guide for a battery-
   - LVR reconnect: 12.6V (safe restart voltage)
 
 **Benefits:**
+
 - Prevents overcharging and gassing
 - Extends battery life with proper charging profile
 - Automatic load disconnect protects from deep discharge
@@ -240,6 +260,7 @@ This document provides a complete design and implementation guide for a battery-
 ### 2.7 Battery System Design
 
 **Power Consumption Analysis:**
+
 - S-392T-3W pulse: 12V × 2A × 0.05s = 1.2 Watt-seconds = 0.000333Wh per operation ✓
 - Valve operations: Assume 4 operations/day = 4 × 0.000333Wh = 0.001332Wh per day
 - LT-22222-L sleep: 4mA × 12V × 24h = 1.152Wh per day
@@ -252,6 +273,7 @@ Note: SE01-LB sensor has its own 8500mAh Li/SOCl2 battery with 5-year life,
 so it doesn't add to the system power consumption.
 
 **Battery Sizing (Powery 12V 9Ah AGM/Gel):**
+
 - Total capacity: 12V × 9Ah = 108Wh
 - Temperature derating (0°C): 108Wh × 0.8 = 86.4Wh
 - Usable capacity (50% DoD recommended): 86.4Wh × 0.5 = 43.2Wh
@@ -262,6 +284,7 @@ so it doesn't add to the system power consumption.
 - Note: AGM/Gel batteries should not regularly exceed 50% DoD for longevity
 
 **Solar Sizing (WATTSTUNDE WS10-M):**
+
 - Panel generates 40Wh daily (manufacturer spec, optimal conditions)
 - Charging efficiency losses: 40Wh × 0.85 = 34Wh usable daily
 - Winter derating factor: 34Wh × 0.6 = 20.4Wh (worst case)
@@ -277,6 +300,7 @@ so it doesn't add to the system power consumption.
 **SOLUTION:** Use the LT-22222-L relay outputs (RO1, RO2) which are rated for 5A and perfect for 2A valve control. The digital outputs (DO1, DO2) are only rated for 450mA and must NOT be used for direct valve control.
 
 **Recommended Configuration:**
+
 - **Power Path:** Solar → PEKO3 → Battery & Load Output (3A) → LT-22222-L → Relay Outputs (5A) → Valve (2A pulse)
 - **Control Method:** Use RO1 and RO2 relay outputs exclusively for valve control
 - **Protection:** 2A fuse in valve circuit for additional safety
@@ -288,13 +312,15 @@ The S-392T-3W latching valve requires polarity reversal to change states. This s
 ### 2.9.1 How It Works
 
 **Simple Concept:**
+
 - **RO1 (Polarity Switch)**: Sets valve direction (ON = open, OFF = close)
 - **RO2 (Pulse Generator)**: Sends 200ms pulse to activate valve
 - **DPDT Relay**: Switches polarity based on RO1, activated by RO2
 
 **Components Required:**
+
 - 1x Finder 55.34.9.012.0040 DPDT relay (12V coil)
-- 1x Finder 94.04 relay socket  
+- 1x Finder 94.04 relay socket
 - 1x Finder 99.02.9.024.99 EMC suppression module
 - 2A fuse for valve circuit protection
 
@@ -320,12 +346,14 @@ The S-392T-3W latching valve requires polarity reversal to change states. This s
 ### 2.9.3 Operation
 
 **To CLOSE valve (Bypass):**
+
 1. RO1 stays OFF (polarity set for CLOSE)
 2. RO2 sends 200ms pulse → Terminal 1 = +12V, Terminal 2 = GND
 3. Valve switches to bypass position, then no power
 
 **To OPEN valve (Irrigation):**
-1. RO1 turns ON (polarity set for OPEN)  
+
+1. RO1 turns ON (polarity set for OPEN)
 2. RO2 sends 200ms pulse → Terminal 1 = GND, Terminal 2 = +12V
 3. Valve switches to irrigation position, then no power
 
@@ -334,6 +362,7 @@ The S-392T-3W latching valve requires polarity reversal to change states. This s
 ## 2.10 LoRaWAN Command Protocol Reference
 
 **LT-22222-L Downlink Command Format:**
+
 ```
 Byte 0: Command Type (0x02 for relay control)
 Byte 1: Relay Number (0x01 for RO1, 0x02 for RO2)
@@ -342,6 +371,7 @@ Byte 3: Duration (0xC8 = 200ms, 0x32 = 50ms)
 ```
 
 **Valve Control Commands:**
+
 ```
 Open Valve (Irrigation):
 - Step 1: Set polarity - Hex: 020101C8 (RO1 ON for 200ms)
@@ -361,6 +391,7 @@ Status Query:
 ```
 
 **Verification Commands (AT Interface):**
+
 ```
 AT+RO1TIME=200    # Set RO1 pulse duration to 200ms
 AT+RO2TIME=200    # Set RO2 pulse duration to 200ms
@@ -370,6 +401,7 @@ AT+STATUS         # Check current relay states
 ```
 
 **Polarity Reversal Testing Procedure:**
+
 ```
 1. Pre-Installation Testing:
    - Measure valve coil resistance: Should be 6Ω ± 10%
@@ -516,6 +548,7 @@ Built-in LoRaWAN Server Configuration:
 ### 4.2 Node-RED Dashboard Programming
 
 **Note**: Valve control requires a two-step process:
+
 1. **Set Polarity**: Send RO1 command (ON for OPEN, OFF for CLOSE)
 2. **Send Pulse**: Send RO2 command after 500ms delay to activate valve
 3. **Result**: Valve switches to desired position, then no continuous power
@@ -559,7 +592,7 @@ if (moisture < dry_threshold && valve_status !== "OPEN") {
         },
         topic: "application/irrigation/device/" + zone + "/tx"
     };
-    
+
     // Delay before pulse command
     setTimeout(function() {
         var pulseCmd = {
@@ -591,7 +624,7 @@ if (moisture < dry_threshold && valve_status !== "OPEN") {
         },
         topic: "application/irrigation/device/" + zone + "/tx"
     };
-    
+
     // Delay before pulse command
     setTimeout(function() {
         var pulseCmd = {
@@ -634,7 +667,7 @@ if (command === "OPEN") {
         },
         topic: "application/irrigation/device/" + zone + "/tx"
     };
-    
+
     // Step 2: Send pulse after delay (RO2 ON)
     setTimeout(function() {
         var pulseCmd = {
@@ -646,9 +679,9 @@ if (command === "OPEN") {
         };
         node.send(pulseCmd);
     }, 500); // 500ms delay between commands
-    
+
     return polarityCmd;
-    
+
 } else if (command === "CLOSE") {
     // Step 1: Set polarity for CLOSE (RO1 OFF)
     var polarityCmd = {
@@ -658,7 +691,7 @@ if (command === "OPEN") {
         },
         topic: "application/irrigation/device/" + zone + "/tx"
     };
-    
+
     // Step 2: Send pulse after delay (RO2 ON)
     setTimeout(function() {
         var pulseCmd = {
@@ -670,7 +703,7 @@ if (command === "OPEN") {
         };
         node.send(pulseCmd);
     }, 500); // 500ms delay between commands
-    
+
     return polarityCmd;
 }
 
@@ -776,21 +809,25 @@ tailscale up --advertise-routes=192.168.1.0/24 --accept-routes
 ### 6.3 Return on Investment
 
 **Water Savings:**
+
 - Precision irrigation reduces water waste by 30-40%
 - Automated scheduling prevents over/under watering
 - Remote monitoring prevents system failures
 
 **Labor Savings:**
+
 - Eliminates daily manual valve operations
 - Remote monitoring reduces field visits
 - Automated operation reduces management time
 
 **Crop Yield Improvements:**
+
 - Optimal soil moisture increases yields by 15-25%
 - Reduced plant stress improves quality
 - Prevention of drought/flood damage
 
 **ROI Calculation (per hectare):**
+
 - System cost: ~1,000€/hectare
 - Annual savings: 400-600€/hectare
 - Payback period: 1.5-2.5 years
@@ -823,35 +860,40 @@ tailscale up --advertise-routes=192.168.1.0/24 --accept-routes
 
 **Issue: Valve doesn't respond to commands**
 Diagnostics:
+
 - Check battery voltage (should be >11V)
 - Verify LoRaWAN connectivity (RSSI)
 - Test with manual AT command: AT+RO1=1 (for relay)
 
 Solutions:
+
 - Replace/charge battery if voltage low
 - Improve antenna position if poor signal
 - Check valve coil resistance (should be 6Ω)
 - Verify relay is clicking when activated
 
-
 **Issue: Inconsistent soil moisture readings**
 Diagnostics:
+
 - Compare multiple sensors in same area
 - Check sensor calibration values
 - Verify proper installation depth
 
 Solutions:
+
 - Recalibrate sensors annually
 - Replace sensors after 5+ years
 - Ensure proper soil contact
 
 **Issue: Short battery life**
 Diagnostics:
+
 - Monitor daily power consumption
 - Check solar panel performance
 - Verify sleep mode operation
 
 Solutions:
+
 - Clean/realign solar panels
 - Update firmware for better power management
 - Check for water ingress in electronics
@@ -859,18 +901,21 @@ Solutions:
 ### 7.3 Emergency Procedures
 
 **Total System Failure:**
+
 1. Manual valve operation (remove power, manually operate)
 2. Backup irrigation schedule (timer-based)
 3. Emergency contact technician
 4. Document failure for analysis
 
 **Communication Loss:**
+
 1. Check gateway internet connection
 2. Verify LoRaWAN coverage
 3. Switch to manual/timer operation
 4. Schedule maintenance visit
 
 **Water System Emergency:**
+
 1. Emergency stop all valves via dashboard
 2. Isolate affected zone manually
 3. Check for leaks or pressure issues
