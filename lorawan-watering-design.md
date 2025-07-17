@@ -850,6 +850,10 @@ tailscale up --advertise-routes=192.168.1.0/24 --accept-routes
 | Dragino SE01-LB Sensor        | 3   | 150€       | 450€       |
 | LT-22222-L LoRaWAN Controller | 3   | 150€       | 450€       |
 | S-392T-3W Latching Valve      | 3   | 200€       | 600€       |
+| Finder 55.34.9.012.0040 Relay | 3   | 15€        | 45€        |
+| Finder 94.04 Relay Socket     | 3   | 5€         | 15€        |
+| Finder 99.02.9.024.99 Suppressor | 3   | 8€         | 24€        |
+| 2A Fuse + Holder             | 3   | 3€         | 9€         |
 | Powery 12V 9Ah AGM/Gel        | 3   | 25€        | 75€        |
 | WATTSTUNDE WS10-M Solar Kit   | 3   | 60€        | 180€       |
 | PEKO3 Controller (in kit)     | -   | -          | included   |
@@ -857,7 +861,7 @@ tailscale up --advertise-routes=192.168.1.0/24 --accept-routes
 | **Installation**              |     |            |            |
 | Cables and Fittings           | -   | 150€       | 150€       |
 | Professional Installation     | -   | 500€       | 500€       |
-| **TOTAL SYSTEM COST**         |     |            | **2,770€** |
+| **TOTAL SYSTEM COST**         |     |            | **2,863€** |
 
 ### 6.2 Annual Operating Costs
 
