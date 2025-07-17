@@ -855,13 +855,13 @@ tailscale up --advertise-routes=192.168.1.0/24 --accept-routes
 | Finder 99.02.9.024.99 Suppressor | 3   | 8€         | 24€        |
 | 2A Fuse + Holder             | 3   | 3€         | 9€         |
 | Powery 12V 9Ah AGM/Gel        | 3   | 25€        | 75€        |
-| WATTSTUNDE WS10-M Solar Kit   | 3   | 60€        | 180€       |
+| [WATTSTUNDE WS10-M Solar Kit](https://solarkontor.de/10W-Solar-Inselanlage-Bausatz-WATTSTUNDE-3A-Solar-Laderegler-PEKO3) | 3   | 40€        | 120€       |
 | PEKO3 Controller (in kit)     | -   | -          | included   |
 | Weatherproof Enclosures       | 3   | 40€        | 120€       |
 | **Installation**              |     |            |            |
 | Cables and Fittings           | -   | 150€       | 150€       |
 | Professional Installation     | -   | 500€       | 500€       |
-| **TOTAL SYSTEM COST**         |     |            | **2,863€** |
+| **TOTAL SYSTEM COST**         |     |            | **2,803€** |
 
 ### 6.2 Annual Operating Costs
 
