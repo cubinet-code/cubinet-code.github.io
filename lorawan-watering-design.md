@@ -860,8 +860,7 @@ tailscale up --advertise-routes=192.168.1.0/24 --accept-routes
 | Weatherproof Enclosures       | 3   | 40€        | 120€       |
 | **Installation**              |     |            |            |
 | Cables and Fittings           | -   | 150€       | 150€       |
-| Professional Installation     | -   | 500€       | 500€       |
-| **TOTAL SYSTEM COST**         |     |            | **2,803€** |
+| **TOTAL SYSTEM COST**         |     |            | **2,303€** |
 
 ### 6.2 Annual Operating Costs
 
