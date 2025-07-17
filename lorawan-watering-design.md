@@ -57,7 +57,7 @@ This document provides a complete design and implementation guide for a battery-
 | **Socket**     | [Finder 94.04](https://de.rs-online.com/web/p/relaissockel/4009146) | Relay Socket             | For 55.34 series relays       |
 | **Suppressor** | [Finder 99.02.9.024.99](https://de.rs-online.com/web/p/steckbare-funktionsmodule/6668015) | EMC Suppression          | For relay coil protection     |
 | **Valve**      | [S-392T-3W](https://www.bermad.com/product/s-392t-3w/) | 3-Way Latching Solenoid  | 2-wire polarity-controlled    |
-| **Battery**    | [Powery 12V 9Ah](https://de.rs-online.com/web/p/bleiakkus/1748858) | AGM/Gel UPS Standard     | 108Wh capacity                |
+| **Battery**    | [Sealed Lead-Acid Battery 9Ah](https://de.rs-online.com/web/p/bleiakkus/1748858) | AGM/Gel UPS Standard     | 108Wh capacity                |
 | **Solar**      | [WATTSTUNDE WS10-M](https://solarkontor.de/10W-Solar-Inselanlage-Bausatz-WATTSTUNDE-3A-Solar-Laderegler-PEKO3) | 10Wp Monocrystalline     | 40Wh/day, essential for 9Ah   |
 
 ## 2. Hardware Specifications
