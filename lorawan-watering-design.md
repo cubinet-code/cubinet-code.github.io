@@ -194,7 +194,7 @@ _Note: SE01-LS variant available with solar panel + 3000mAh Li-ion battery_
 - Automatic reconnect when battery recovers (LVR)
 - Protects battery from deep discharge by loads
 
-### 2.5 Powery 12V 9Ah AGM/Gel Battery
+### 2.5 Sealed Lead-Acid Battery 9Ah
 
 **Electrical Specifications:**
 
