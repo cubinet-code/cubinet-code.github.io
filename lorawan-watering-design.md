@@ -334,22 +334,26 @@ The S-392T-3W latching valve requires polarity reversal to change states. This s
 
 ### 2.9.2 Wiring Connections
 
+**Finder 55.34.9.012.0040 Relay Pinout:**
+
+![Finder Relay Pinout](images/finder.png)
+
 **Controller to Relay:**
 
 | LT-22222-L Output | Connect To | Purpose |
 |-------------------|------------|---------|
 | **RO1 COM** | +12V | Power for relay coil |
-| **RO1 NO** | DPDT Relay Coil A1 | Controls polarity |
+| **RO1 NO** | Relay Coil A1 | Controls polarity switching |
 | **RO2 COM** | +12V | Power for valve pulse |
-| **RO2 NO** | DPDT Relay 11 (COM) | Sends pulse to valve |
-| **GND** | DPDT Relay A2 | Coil return |
+| **RO2 NO** | Relay Coil A1 (parallel with RO1) | Activates relay during pulse |
+| **GND** | Relay Coil A2 | Coil return |
 
 **Power Supply to Relay:**
 
 | Power Source | Connect To | Purpose |
 |--------------|------------|---------|
-| **+12V** | DPDT Relay Terminal 12 (NC) & 14 (NO) | Supplies +12V for both polarity positions |
-| **GND** | DPDT Relay Terminal 22 (NC) & 24 (NO) | Supplies GND for both polarity positions |
+| **+12V** | Relay Terminal 11 (COM) | Common +12V for polarity switching |
+| **GND** | Relay Terminal 21 (COM) | Common GND for polarity switching |
 
 **Relay to Valve:**
 
