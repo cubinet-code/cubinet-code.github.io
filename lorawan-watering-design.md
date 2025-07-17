@@ -368,17 +368,21 @@ The S-392T-3W latching valve requires polarity reversal to change states. This s
 
 **To CLOSE valve (Bypass):**
 
-1. RO1 stays OFF (polarity set for CLOSE)
-2. RO2 sends 200ms pulse → Terminal 1 = +12V, Terminal 2 = GND
-3. Valve switches to bypass position, then no power
+1. **Set polarity:** RO1 stays OFF (relay contacts at rest position)
+2. **Send pulse:** RO2 sends 200ms pulse → Terminal 1 = +12V, Terminal 2 = GND
+3. **Result:** Valve switches to bypass position, then no power
 
 **To OPEN valve (Irrigation):**
 
-1. RO1 turns ON (polarity set for OPEN)
-2. RO2 sends 200ms pulse → Terminal 1 = GND, Terminal 2 = +12V
-3. Valve switches to irrigation position, then no power
+1. **Set polarity:** RO1 turns ON indefinitely (relay contacts switch)
+2. **Send pulse:** RO2 sends 200ms pulse → Terminal 1 = GND, Terminal 2 = +12V
+3. **Reset polarity:** RO1 returns to OFF (MANDATORY - saves power)
+4. **Result:** Valve switches to irrigation position, then no power
 
-**Important:** Always send RO1 command first, then RO2 pulse after 500ms delay.
+**Important:** 
+- Always send RO1 command first, then RO2 pulse after 500ms delay
+- RO1 MUST return to OFF after operation to save power (prevents continuous relay coil current)
+- RO2 pulse activates both RO1 and RO2 coils in parallel during valve switching
 
 ## 2.10 LoRaWAN Command Protocol Reference
 
