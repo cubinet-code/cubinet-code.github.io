@@ -295,15 +295,23 @@ so it doesn't add to the system power consumption.
 - Result: System is energy-positive year-round with proper installation
 - Note: Solar is essential with 9Ah battery for continuous operation
 
-## 2.8 CRITICAL DESIGN CONSIDERATION: Current Limitation
+## 2.8 System Power Design and Output Selection
 
-**SOLUTION:** Use the LT-22222-L relay outputs (RO1, RO2) which are rated for 5A and perfect for 2A valve control. The digital outputs (DO1, DO2) are only rated for 450mA and must NOT be used for direct valve control.
+**Output Configuration:**
 
-**Recommended Configuration:**
+The LT-22222-L controller provides two types of outputs with different current ratings:
+- **Relay Outputs (RO1, RO2):** 5A@250VAC/30VDC - designed for high-current switching
+- **Digital Outputs (DO1, DO2):** 450mA maximum - suitable for low-power signaling only
 
-- **Power Path:** Solar → PEKO3 → Battery & Load Output (3A) → LT-22222-L → Relay Outputs (5A) → Valve (2A pulse)
-- **Control Method:** Use RO1 and RO2 relay outputs exclusively for valve control
-- **Protection:** 2A fuse in valve circuit for additional safety
+**Design Specification:**
+
+For reliable valve control, the system exclusively uses relay outputs (RO1, RO2) due to their 5A rating, which safely handles the 2A valve coil current with adequate safety margin.
+
+**System Architecture:**
+
+- **Power Flow:** Solar Panel → PEKO3 Charge Controller → Battery & Load Output (3A) → LT-22222-L → Relay Outputs (5A) → Valve Circuit
+- **Control Strategy:** RO1 controls polarity switching, RO2 provides valve activation pulse
+- **Circuit Protection:** 2A fuse protects valve circuit from overcurrent conditions
 
 ## 2.9 Latching Valve Control
 
