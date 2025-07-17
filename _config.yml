@@ -1,0 +1,62 @@
+# Site settings
+title: "Project Ideas"
+description: "Collection of project designs and implementation guides"
+author: "Oliver Fueckert"
+email: ""
+url: "https://cubinet-code.github.io"
+baseurl: ""
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+theme: minima
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# Theme settings
+minima:
+  skin: auto
+  social_links:
+    github: cubinet-code/cubinet-code.github.io
+
+# Navigation
+header_pages:
+  - index.md
+  - lorawan-watering-design.md
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - Datasheets/
+
+# Kramdown settings
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+
+# Collections
+collections:
+  docs:
+    output: true
+    permalink: /:collection/:name/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "page"
+  - scope:
+      path: ""
+      type: "docs"
+    values:
+      layout: "page"
