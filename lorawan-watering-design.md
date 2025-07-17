@@ -368,16 +368,17 @@ The S-392T-3W latching valve requires polarity reversal to change states. This s
 
 **To CLOSE valve (Bypass):**
 
-1. **Set polarity:** RO1 stays OFF (relay contacts at rest position)
+1. **Set polarity:** RO1 OFF indefinitely (relay contacts at rest position)
 2. **Send pulse:** RO2 sends 200ms pulse → Terminal 1 = +12V, Terminal 2 = GND
-3. **Result:** Valve switches to bypass position, then no power
+3. **Reset polarity:** RO1 returns to OFF (MANDATORY - saves power)
+4. **Result:** Valve switches to bypass position, then no voltage
 
 **To OPEN valve (Irrigation):**
 
 1. **Set polarity:** RO1 turns ON indefinitely (relay contacts switch)
 2. **Send pulse:** RO2 sends 200ms pulse → Terminal 1 = GND, Terminal 2 = +12V
 3. **Reset polarity:** RO1 returns to OFF (MANDATORY - saves power)
-4. **Result:** Valve switches to irrigation position, then no power
+4. **Result:** Valve switches to irrigation position, then no voltage
 
 **Important:** 
 - Always send RO1 command first, then RO2 pulse after 500ms delay
@@ -620,7 +621,7 @@ var dry_threshold = 30;    // Start irrigation at 30%
 var wet_threshold = 70;    // Stop irrigation at 70%
 
 if (moisture < dry_threshold && valve_status !== "OPEN") {
-    // Open valve - improved three-step process: set polarity, pulse, optional reset
+    // Open valve - improved three-step process: set polarity, pulse, mandatory reset
     var polarityCmd = {
         payload: {
             fPort: 2,
@@ -664,7 +665,7 @@ if (moisture < dry_threshold && valve_status !== "OPEN") {
     return [polarityCmd, status];
 
 } else if (moisture > wet_threshold && valve_status !== "CLOSE") {
-    // Close valve - improved three-step process: set polarity, pulse, optional reset
+    // Close valve - improved three-step process: set polarity, pulse, mandatory reset
     var polarityCmd = {
         payload: {
             fPort: 2,
@@ -719,7 +720,7 @@ var command = msg.payload; // "OPEN" or "CLOSE" from dashboard
 var zone = msg.topic; // Zone identifier
 
 if (command === "OPEN") {
-    // Step 1: Set polarity for OPEN (RO1 ON)
+    // Step 1: Set polarity for OPEN (RO1 ON indefinitely)
     var polarityCmd = {
         payload: {
             fPort: 2,
@@ -755,7 +756,7 @@ if (command === "OPEN") {
     return polarityCmd;
 
 } else if (command === "CLOSE") {
-    // Step 1: Set polarity for CLOSE (RO1 OFF)
+    // Step 1: Set polarity for CLOSE (RO1 OFF indefinitely)
     var polarityCmd = {
         payload: {
             fPort: 2,
