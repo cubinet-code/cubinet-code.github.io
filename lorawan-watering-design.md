@@ -12,7 +12,7 @@ This document provides a complete design and implementation guide for a battery-
 
 **Key Features:**
 
-- Off-grid battery operation (45-72 days autonomy without solar)
+- Off-grid battery operation (32-52 days autonomy without solar)
 - Remote control via LoRaWAN and Tailscale VPN
 - Ultra-low power consumption (~1.2Wh daily)
 - Professional latching valve technology
@@ -1045,7 +1045,7 @@ Solutions:
 
 This LoRaWAN irrigation system provides a modern, efficient, and cost-effective solution for agricultural water management. The combination of ultra-low power consumption, professional-grade components, and intelligent automation delivers significant benefits:
 
-- **45-72 days battery autonomy** without solar, indefinite with solar
+- **32-52 days battery autonomy** without solar, indefinite with solar
 - **Remote monitoring and control** via secure VPN access
 - **Professional reliability** with latching valve technology
 - **Rapid ROI** through water and labor savings
