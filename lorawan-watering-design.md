@@ -334,6 +334,10 @@ The valve control system uses a DPDT relay configuration where:
 
 ![Valve Control Circuit](images/dpdt_diagram.png)
 
+**Finder 55.34.9.012.0040 DPDT Relay Pinout:**
+
+![Finder Relay Pinout](images/finder_pinout.png)
+
 ### 2.9.2 Simulation Results
 
 The following simulation shows the valve control operation with proper timing:
