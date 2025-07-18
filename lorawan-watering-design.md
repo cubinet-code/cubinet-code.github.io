@@ -306,12 +306,16 @@ The LT-22222-L controller provides two types of outputs with different current r
 
 **Design Specification:**
 
-For reliable valve control, the system exclusively uses relay outputs (RO1, RO2) due to their 5A rating, which safely handles the 2A valve coil current with adequate safety margin.
+For reliable valve control, the system uses a hybrid approach:
+- **Digital Output D01:** Controls polarity switching by powering the DPDT relay (86mA relay coil)
+- **Relay Output R01:** Controls current flow to the valve (2A valve coil current)
+
+This design leverages both output types optimally: D01's capability for relay control (86mA < 450mA limit) and R01's high-current capability for valve activation.
 
 **System Architecture:**
 
-- **Power Flow:** Solar Panel → PEKO3 Charge Controller → Battery & Load Output (3A) → LT-22222-L → Relay Outputs (5A) → Valve Circuit
-- **Control Strategy:** RO1 in line with red wire for polarity control, RO2 controls voltage flow to valve
+- **Power Flow:** Solar Panel → PEKO3 Charge Controller → Battery & Load Output (3A) → LT-22222-L → D01 + R01 → Valve Circuit
+- **Control Strategy:** D01 controls DPDT relay polarity, R01 controls current flow to valve
 - **Circuit Protection:** 2A fuse protects valve circuit from overcurrent conditions
 
 ## 2.9 Latching Valve Control
