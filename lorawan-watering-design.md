@@ -314,7 +314,9 @@ This design leverages both output types optimally: D01's capability for relay co
 
 **System Architecture:**
 
-- **Power Flow:** Solar Panel → PEKO3 Charge Controller → Battery & Load Output (3A) → LT-22222-L → D01 + R01 → Valve Circuit
+- **Power Flow:** 
+  - **Controller Power:** Solar Panel → PEKO3 Charge Controller → Battery & Load Output (3A) → LT-22222-L
+  - **Valve Power:** Solar Panel → PEKO3 Charge Controller → Battery & Load Output (3A) → DPDT Relay COM2 → Valve Circuit
 - **Control Strategy:** D01 controls DPDT relay polarity, R01 controls current flow to valve
 - **Circuit Protection:** 2A fuse protects valve circuit from overcurrent conditions
 
@@ -444,7 +446,7 @@ AT+STATUS         # Check current output states
 
 4. Current Monitoring:
    - Monitor pulse current: Should be ~2A for 200ms during R01 pulse only
-   - D01 current should be minimal (~25mA for relay coil)
+   - D01 current should be minimal (~86mA for relay coil)
    - Verify no continuous current to valve after R01 pulse
    - Check fuse integrity after multiple operations
    - Ensure R01 returns to OFF state first, then D01 MUST be reset to save power
