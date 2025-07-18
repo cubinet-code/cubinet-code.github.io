@@ -48,16 +48,16 @@ This document provides a complete design and implementation guide for a battery-
 
 ### 1.2 Component Overview
 
-| Component      | Model                   | Function                 | Specifications                |
-| -------------- | ----------------------- | ------------------------ | ----------------------------- |
-| **Gateway**    | [LPS8v2](https://www.dragino.com/products/lora-lorawan-gateway/item/228-lps8v2.html) | LoRaWAN Gateway + Server | Built-in ChirpStack, Node-RED |
-| **Sensor**     | [SE01-LB](https://www.dragino.com/products/agriculture-weather-station/item/277-se01-lb.html) | Soil Moisture/EC/Temp    | LoRaWAN, 5-year battery life  |
-| **Controller** | [LT-22222-L](https://www.dragino.com/products/lora-lorawan-end-node/item/156-lt-22222-l.html) | I/O Control + LoRaWAN    | 4mA sleep, relay output       |
-| **Relay**      | [Finder 55.34.9.012.0040](https://de.rs-online.com/web/p/elektrische-relais/0385913) | DPDT Polarity Switching  | 12V coil, 5A contacts         |
-| **Socket**     | [Finder 94.04](https://de.rs-online.com/web/p/relaissockel/4009146) | Relay Socket             | For 55.34 series relays       |
-| **Suppressor** | [Finder 99.02.9.024.99](https://de.rs-online.com/web/p/steckbare-funktionsmodule/6668015) | EMC Suppression          | For relay coil protection     |
-| **Valve**      | [S-392T-3W](https://www.bermad.com/product/s-392t-3w/) | 3-Way Latching Solenoid  | 2-wire polarity-controlled    |
-| **Battery**    | [Sealed Lead-Acid Battery 9Ah](https://de.rs-online.com/web/p/bleiakkus/1748858) | AGM/Gel UPS Standard     | 108Wh capacity                |
+| Component      | Model                                                                                                          | Function                 | Specifications                |
+| -------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------ | ----------------------------- |
+| **Gateway**    | [LPS8v2](https://www.dragino.com/products/lora-lorawan-gateway/item/228-lps8v2.html)                           | LoRaWAN Gateway + Server | Built-in ChirpStack, Node-RED |
+| **Sensor**     | [SE01-LB](https://www.dragino.com/products/agriculture-weather-station/item/277-se01-lb.html)                  | Soil Moisture/EC/Temp    | LoRaWAN, 5-year battery life  |
+| **Controller** | [LT-22222-L](https://www.dragino.com/products/lora-lorawan-end-node/item/156-lt-22222-l.html)                  | I/O Control + LoRaWAN    | 4mA sleep, relay output       |
+| **Relay**      | [Finder 55.34.9.012.0040](https://de.rs-online.com/web/p/elektrische-relais/0385913)                           | DPDT Polarity Switching  | 12V coil, 5A contacts         |
+| **Socket**     | [Finder 94.04](https://de.rs-online.com/web/p/relaissockel/4009146)                                            | Relay Socket             | For 55.34 series relays       |
+| **Suppressor** | [Finder 99.02.9.024.99](https://de.rs-online.com/web/p/steckbare-funktionsmodule/6668015)                      | EMC Suppression          | For relay coil protection     |
+| **Valve**      | [S-392T-3W](https://www.bermad.com/product/s-392t-3w/)                                                         | 3-Way Latching Solenoid  | 2-wire polarity-controlled    |
+| **Battery**    | [Sealed Lead-Acid Battery 9Ah](https://de.rs-online.com/web/p/bleiakkus/1748858)                               | AGM/Gel UPS Standard     | 108Wh capacity                |
 | **Solar**      | [WATTSTUNDE WS10-M](https://solarkontor.de/10W-Solar-Inselanlage-Bausatz-WATTSTUNDE-3A-Solar-Laderegler-PEKO3) | 10Wp Monocrystalline     | 40Wh/day, essential for 9Ah   |
 
 ## 2. Hardware Specifications
@@ -300,6 +300,7 @@ so it doesn't add to the system power consumption.
 **Output Configuration:**
 
 The LT-22222-L controller provides two types of outputs with different current ratings:
+
 - **Relay Outputs (RO1, RO2):** 5A@250VAC/30VDC - designed for high-current switching
 - **Digital Outputs (DO1, DO2):** 450mA maximum - suitable for low-power signaling only
 
@@ -310,107 +311,91 @@ For reliable valve control, the system exclusively uses relay outputs (RO1, RO2)
 **System Architecture:**
 
 - **Power Flow:** Solar Panel → PEKO3 Charge Controller → Battery & Load Output (3A) → LT-22222-L → Relay Outputs (5A) → Valve Circuit
-- **Control Strategy:** RO1 controls polarity switching, RO2 provides valve activation pulse
+- **Control Strategy:** RO1 in line with red wire for polarity control, RO2 controls voltage flow to valve
 - **Circuit Protection:** 2A fuse protects valve circuit from overcurrent conditions
 
 ## 2.9 Latching Valve Control
 
-The S-392T-3W latching valve requires polarity reversal to change states. This system uses a simple two-relay approach.
+The S-392T-3W latching valve requires polarity reversal to change states. We use the LT-22222-L Output D01 to control polarity powering the Finder relais, and R01 to control current flow to the valve.
 
-### 2.9.1 How It Works
+### 2.9.1 System Overview
 
-**Simple Concept:**
+The valve control system uses a DPDT relay configuration where:
 
-- **RO1 (Polarity Switch)**: Sets valve direction (ON = open, OFF = close)
-- **RO2 (Pulse Generator)**: Sends 200ms pulse to activate valve
-- **DPDT Relay**: Switches polarity based on RO1, activated by RO2
+- **LT-22222-L Output D01**: Controls polarity switching by powering the DPDT relay
+- **LT-22222-L Relais R01**: Controls current flow to the valve for activation
+- **DPDT Relay**: Switches polarity based on D01 state
 
-**Components Required:**
+![Valve Control Circuit](images/dpdt_diagram.png)
 
-- 1x Finder 55.34.9.012.0040 DPDT relay (12V coil)
-- 1x Finder 94.04 relay socket
-- 1x Finder 99.02.9.024.99 EMC suppression module
-- 2A fuse for valve circuit protection
+### 2.9.2 Simulation Results
 
-### 2.9.2 Wiring Connections
+The following simulation shows the valve control operation with proper timing:
 
-**Finder 55.34.9.012.0040 Relay Pinout:**
+![Valve Simulation](images/valve_simulation.png)
 
-![Finder Relay Pinout](images/finder.png)
+The simulation demonstrates:
 
-**Controller to Relay:**
+- **V(d01)**: Digital output D01 controlling relay polarity
+- **V(r01)**: Relais R01 controlling current to the valve
+- **I(Valve)**: Current through valve coil during activation
 
-| LT-22222-L Output | Connect To | Purpose |
-|-------------------|------------|---------|
-| **RO1 COM** | +12V | Power for relay coil |
-| **RO1 NO** | Relay Coil A1 | Controls polarity switching |
-| **RO2 COM** | +12V | Power for valve pulse |
-| **RO2 NO** | Relay Coil A1 (parallel with RO1) | Activates relay during pulse |
-| **GND** | Relay Coil A2 | Coil return |
-
-**Power Supply to Relay:**
-
-| Power Source | Connect To | Purpose |
-|--------------|------------|---------|
-| **+12V** | Relay Terminal 11 (COM) | Common +12V for polarity switching |
-| **GND** | Relay Terminal 21 (COM) | Common GND for polarity switching |
-
-**Relay to Valve:**
-
-| Relay Terminal | Connect To | What It Does |
-|----------------|------------|--------------|
-| **12 (NC)** | Valve Terminal 1 | CLOSE: +12V to red wire |
-| **14 (NO)** | Valve Terminal 2 | OPEN: +12V to black wire |
-| **22 (NC)** | Valve Terminal 2 | CLOSE: GND to black wire |
-| **24 (NO)** | Valve Terminal 1 | OPEN: GND to red wire |
-
-### 2.9.3 Operation
+### 2.9.3 Operation Sequence
 
 **To CLOSE valve (Bypass):**
 
-1. **Set polarity:** RO1 OFF indefinitely (relay contacts at rest position)
-2. **Send pulse:** RO2 sends 200ms pulse → Terminal 1 = +12V, Terminal 2 = GND
-3. **Reset polarity:** RO1 returns to OFF (MANDATORY - saves power)
+1. **Set polarity:** D01 OFF (DPDT relay contacts at rest position)
+2. **Send pulse:** R01 sends 200ms pulse → Valve receives +12V to red wire, GND to black wire
+3. **Reset:** Both outputs return to OFF state
 4. **Result:** Valve switches to bypass position, then no voltage
 
 **To OPEN valve (Irrigation):**
 
-1. **Set polarity:** RO1 turns ON indefinitely (relay contacts switch)
-2. **Send pulse:** RO2 sends 200ms pulse → Terminal 1 = GND, Terminal 2 = +12V
-3. **Reset polarity:** RO1 returns to OFF (MANDATORY - saves power)
+1. **Set polarity:** D01 ON (DPDT relay contacts switch)
+2. **Send pulse:** R01 sends 200ms pulse → Valve receives GND to red wire, +12V to black wire
+3. **Reset:** Both outputs return to OFF state
 4. **Result:** Valve switches to irrigation position, then no voltage
 
-**Important:** 
-- Always send RO1 command first, then RO2 pulse after 500ms delay
-- RO1 MUST return to OFF after operation to save power (prevents continuous relay coil current)
-- RO2 pulse activates both RO1 and RO2 coils in parallel during valve switching
+**Important:**
+
+- Always send D01 command first, then R01 pulse after 500ms delay
+- R01 must be OFF first before resetting D01
+- Both outputs must return to OFF after operation to save power
+- The relay only switches polarity when D01 is active
 
 ## 2.10 LoRaWAN Command Protocol Reference
 
 **LT-22222-L Downlink Command Format:**
 
 ```
-Byte 0: Command Type (0x02 for relay control)
-Byte 1: Relay Number (0x01 for RO1, 0x02 for RO2)
-Byte 2: Action (0x01 for ON, 0x00 for OFF)
-Byte 3: Duration (0xC8 = 200ms, 0x32 = 50ms)
+Digital Output Control: 02 <DO1> <DO2> <DO3>
+- DO Status: 01=Low, 00=High, 11=No action
+
+Relay Output Control: 03 <RO1> <RO2>
+- RO Status: 01=Close, 00=Open, 11=No action
+
+Time-Controlled Outputs:
+- Digital: A9 + parameters (for timed pulses)
+- Relay: 05 + parameters (for timed pulses)
 ```
 
 **Valve Control Commands:**
 
 ```
 Open Valve (Irrigation):
-- Step 1: Set polarity - Hex: 020101FF (RO1 ON indefinitely)
-- Step 2: Send pulse - Hex: 020201C8 (RO2 ON for 200ms)
-- Step 3: Reset polarity - Hex: 020100C8 (RO1 OFF for 200ms) [MANDATORY - saves power]
-- Function: RO1 sets polarity, RO2 provides pulse → Terminal 1 = GND, Terminal 2 = +12V → OPEN
+- Step 1: Set polarity - Hex: 02001111 (D01 High for polarity control)
+- Step 2: Send pulse - Hex: 030111 (R01 Close for 200ms valve pulse)
+- Step 3: Reset R01 first - Hex: 030011 (R01 Open - pulse complete)
+- Step 4: Reset polarity - Hex: 02011111 (D01 Low - saves power)
+- Function: D01 High sets polarity, R01 Close provides pulse → OPEN
 - Result: Valve switches to irrigation position, then no voltage
 
 Close Valve (Bypass):
-- Step 1: Set polarity - Hex: 020100FF (RO1 OFF indefinitely)
-- Step 2: Send pulse - Hex: 020201C8 (RO2 ON for 200ms)
-- Step 3: Reset polarity - Hex: 020100C8 (RO1 OFF for 200ms) [MANDATORY - saves power]
-- Function: RO1 sets polarity, RO2 provides pulse → Terminal 1 = +12V, Terminal 2 = GND → CLOSE
+- Step 1: Set polarity - Hex: 02011111 (D01 Low for polarity control)
+- Step 2: Send pulse - Hex: 030111 (R01 Close for 200ms valve pulse)
+- Step 3: Reset R01 first - Hex: 030011 (R01 Open - pulse complete)
+- Step 4: Reset polarity - Hex: 02011111 (D01 Low - saves power)
+- Function: D01 Low sets polarity, R01 Close provides pulse → CLOSE
 - Result: Valve switches to bypass position, then no voltage
 
 Status Query:
@@ -421,12 +406,11 @@ Status Query:
 **Verification Commands (AT Interface):**
 
 ```
-AT+RO1TIME=65535  # Set RO1 to maximum duration (indefinite)
-AT+RO2TIME=200    # Set RO2 pulse duration to 200ms
-AT+RO1=1          # Test RO1 activation (set polarity - stays ON)
-AT+RO1=0          # Test RO1 deactivation (reset polarity)
-AT+RO2=1          # Test RO2 activation (valve pulse - 200ms only)
-AT+STATUS         # Check current relay states
+AT+DO1=0          # Set D01 High (polarity control)
+AT+DO1=1          # Set D01 Low (reset polarity)
+AT+RO1=1          # Close R01 (valve pulse)
+AT+RO1=0          # Open R01 (end pulse)
+AT+STATUS         # Check current output states
 ```
 
 **Polarity Reversal Testing Procedure:**
@@ -435,31 +419,31 @@ AT+STATUS         # Check current relay states
 1. Pre-Installation Testing:
    - Measure valve coil resistance: Should be 6Ω ± 10%
    - Verify valve terminals are correctly identified
-   - Test controller RO1 and RO2 relay outputs with multimeter
+   - Test controller D01 and R01 outputs with multimeter
 
 2. Circuit Verification:
    - Connect multimeter across valve terminals
-   - Default state: Both relays OFF → No voltage (0V across terminals)
-   - Test CLOSE: AT+RO1=0 (set polarity), then AT+RO2=1 (pulse)
+   - Default state: Both outputs OFF → No voltage (0V across terminals)
+   - Test CLOSE: AT+DO1=1 (set polarity low), then AT+RO1=1 (pulse)
    - Verify: Terminal 1 = +12V, Terminal 2 = GND for 200ms, then 0V
-   - Test OPEN: AT+RO1=1 (set polarity), then AT+RO2=1 (pulse)
+   - Test OPEN: AT+DO1=0 (set polarity high), then AT+RO1=1 (pulse)
    - Verify: Terminal 1 = GND, Terminal 2 = +12V for 200ms, then 0V
-   - MANDATORY: AT+RO1=0 to reset polarity after each test (saves power)
+   - MANDATORY: AT+RO1=0 first, then AT+DO1=1 to reset polarity after each test (saves power)
 
 3. Functional Testing:
    - Start with valve in known position
-   - Send CLOSE sequence: RO1 OFF (polarity) + RO2 pulse → Valve to bypass position
-   - Send OPEN sequence: RO1 ON (polarity) + RO2 pulse → Valve to irrigation position
+   - Send CLOSE sequence: D01 Low (polarity) + R01 pulse → Valve to bypass position
+   - Send OPEN sequence: D01 High (polarity) + R01 pulse → Valve to irrigation position
    - Verify water flow direction matches expected operation
    - Confirm valve maintains position after pulse (no continuous power)
-   - MANDATORY: Reset polarity after each operation: AT+RO1=0 (saves power)
+   - MANDATORY: Reset R01 first, then D01 after each operation (saves power)
 
 4. Current Monitoring:
-   - Monitor pulse current: Should be ~2A for 200ms during RO2 pulse only
-   - RO1 current should be minimal (~25mA for relay coil)
-   - Verify no continuous current to valve after RO2 pulse
+   - Monitor pulse current: Should be ~2A for 200ms during R01 pulse only
+   - D01 current should be minimal (~25mA for relay coil)
+   - Verify no continuous current to valve after R01 pulse
    - Check fuse integrity after multiple operations
-   - Ensure RO2 returns to OFF state after pulse, RO1 MUST be reset to OFF to save power
+   - Ensure R01 returns to OFF state first, then D01 MUST be reset to save power
 ```
 
 ## 3. Installation Procedures
@@ -621,36 +605,48 @@ var dry_threshold = 30;    // Start irrigation at 30%
 var wet_threshold = 70;    // Stop irrigation at 70%
 
 if (moisture < dry_threshold && valve_status !== "OPEN") {
-    // Open valve - improved three-step process: set polarity, pulse, mandatory reset
+    // Open valve - four-step process: set polarity, pulse, reset R01 first, then reset D01
     var polarityCmd = {
         payload: {
             fPort: 2,
-            data: "020101FF"  // RO1 on indefinitely - set polarity for OPEN
+            data: "02001111"  // D01 High - set polarity for OPEN
         },
         topic: "application/irrigation/device/" + zone + "/tx"
     };
 
-    // Delay before pulse command
+    // Step 2: Send pulse after delay
     setTimeout(function() {
         var pulseCmd = {
             payload: {
                 fPort: 2,
-                data: "020201C8"  // RO2 on, 200ms pulse - activate valve
+                data: "030111"  // R01 Close - valve pulse
             },
             topic: "application/irrigation/device/" + zone + "/tx"
         };
         node.send(pulseCmd);
-        
-        // MANDATORY: Reset polarity after valve activation to save power
+
+        // Step 3: Reset R01 first (MANDATORY sequence)
         setTimeout(function() {
-            var resetCmd = {
+            var resetR01Cmd = {
                 payload: {
                     fPort: 2,
-                    data: "020100C8"  // RO1 off, 200ms - reset polarity to save power
+                    data: "030011"  // R01 Open - end pulse
                 },
                 topic: "application/irrigation/device/" + zone + "/tx"
             };
-            node.send(resetCmd);
+            node.send(resetR01Cmd);
+            
+            // Step 4: Reset D01 after R01 (saves power)
+            setTimeout(function() {
+                var resetD01Cmd = {
+                    payload: {
+                        fPort: 2,
+                        data: "02011111"  // D01 Low - reset polarity
+                    },
+                    topic: "application/irrigation/device/" + zone + "/tx"
+                };
+                node.send(resetD01Cmd);
+            }, 500); // 500ms after R01 reset
         }, 1000); // 1000ms after pulse command
     }, 500); // 500ms delay between polarity and pulse commands
 
@@ -665,36 +661,48 @@ if (moisture < dry_threshold && valve_status !== "OPEN") {
     return [polarityCmd, status];
 
 } else if (moisture > wet_threshold && valve_status !== "CLOSE") {
-    // Close valve - improved three-step process: set polarity, pulse, mandatory reset
+    // Close valve - four-step process: set polarity, pulse, reset R01 first, then reset D01
     var polarityCmd = {
         payload: {
             fPort: 2,
-            data: "020100FF"  // RO1 off indefinitely - set polarity for CLOSE
+            data: "02011111"  // D01 Low - set polarity for CLOSE
         },
         topic: "application/irrigation/device/" + zone + "/tx"
     };
 
-    // Delay before pulse command
+    // Step 2: Send pulse after delay
     setTimeout(function() {
         var pulseCmd = {
             payload: {
                 fPort: 2,
-                data: "020201C8"  // RO2 on, 200ms pulse - activate valve
+                data: "030111"  // R01 Close - valve pulse
             },
             topic: "application/irrigation/device/" + zone + "/tx"
         };
         node.send(pulseCmd);
-        
-        // MANDATORY: Reset polarity after valve activation to save power
+
+        // Step 3: Reset R01 first (MANDATORY sequence)
         setTimeout(function() {
-            var resetCmd = {
+            var resetR01Cmd = {
                 payload: {
                     fPort: 2,
-                    data: "020100C8"  // RO1 off, 200ms - reset polarity to save power
+                    data: "030011"  // R01 Open - end pulse
                 },
                 topic: "application/irrigation/device/" + zone + "/tx"
             };
-            node.send(resetCmd);
+            node.send(resetR01Cmd);
+            
+            // Step 4: Reset D01 after R01 (saves power)
+            setTimeout(function() {
+                var resetD01Cmd = {
+                    payload: {
+                        fPort: 2,
+                        data: "02011111"  // D01 Low - reset polarity
+                    },
+                    topic: "application/irrigation/device/" + zone + "/tx"
+                };
+                node.send(resetD01Cmd);
+            }, 500); // 500ms after R01 reset
         }, 1000); // 1000ms after pulse command
     }, 500); // 500ms delay between polarity and pulse commands
 
@@ -720,72 +728,96 @@ var command = msg.payload; // "OPEN" or "CLOSE" from dashboard
 var zone = msg.topic; // Zone identifier
 
 if (command === "OPEN") {
-    // Step 1: Set polarity for OPEN (RO1 ON indefinitely)
+    // Step 1: Set polarity for OPEN (D01 High)
     var polarityCmd = {
         payload: {
             fPort: 2,
-            data: "020101FF"  // RO1 on indefinitely - set polarity for OPEN
+            data: "02001111"  // D01 High - set polarity for OPEN
         },
         topic: "application/irrigation/device/" + zone + "/tx"
     };
 
-    // Step 2: Send pulse after delay (RO2 ON)
+    // Step 2: Send pulse after delay (R01 Close)
     setTimeout(function() {
         var pulseCmd = {
             payload: {
                 fPort: 2,
-                data: "020201C8"  // RO2 on, 200ms pulse - activate valve
+                data: "030111"  // R01 Close - valve pulse
             },
             topic: "application/irrigation/device/" + zone + "/tx"
         };
         node.send(pulseCmd);
-        
-        // Step 3: MANDATORY reset polarity after valve activation to save power
+
+        // Step 3: Reset R01 first (MANDATORY sequence)
         setTimeout(function() {
-            var resetCmd = {
+            var resetR01Cmd = {
                 payload: {
                     fPort: 2,
-                    data: "020100C8"  // RO1 off, 200ms - reset polarity to save power
+                    data: "030011"  // R01 Open - end pulse
                 },
                 topic: "application/irrigation/device/" + zone + "/tx"
             };
-            node.send(resetCmd);
+            node.send(resetR01Cmd);
+            
+            // Step 4: Reset D01 after R01 (saves power)
+            setTimeout(function() {
+                var resetD01Cmd = {
+                    payload: {
+                        fPort: 2,
+                        data: "02011111"  // D01 Low - reset polarity
+                    },
+                    topic: "application/irrigation/device/" + zone + "/tx"
+                };
+                node.send(resetD01Cmd);
+            }, 500); // 500ms after R01 reset
         }, 1000); // 1000ms after pulse command
     }, 500); // 500ms delay between commands
 
     return polarityCmd;
 
 } else if (command === "CLOSE") {
-    // Step 1: Set polarity for CLOSE (RO1 OFF indefinitely)
+    // Step 1: Set polarity for CLOSE (D01 Low)
     var polarityCmd = {
         payload: {
             fPort: 2,
-            data: "020100FF"  // RO1 off indefinitely - set polarity for CLOSE
+            data: "02011111"  // D01 Low - set polarity for CLOSE
         },
         topic: "application/irrigation/device/" + zone + "/tx"
     };
 
-    // Step 2: Send pulse after delay (RO2 ON)
+    // Step 2: Send pulse after delay (R01 Close)
     setTimeout(function() {
         var pulseCmd = {
             payload: {
                 fPort: 2,
-                data: "020201C8"  // RO2 on, 200ms pulse - activate valve
+                data: "030111"  // R01 Close - valve pulse
             },
             topic: "application/irrigation/device/" + zone + "/tx"
         };
         node.send(pulseCmd);
-        
-        // Step 3: MANDATORY reset polarity after valve activation to save power
+
+        // Step 3: Reset R01 first (MANDATORY sequence)
         setTimeout(function() {
-            var resetCmd = {
+            var resetR01Cmd = {
                 payload: {
                     fPort: 2,
-                    data: "020100C8"  // RO1 off, 200ms - reset polarity to save power
+                    data: "030011"  // R01 Open - end pulse
                 },
                 topic: "application/irrigation/device/" + zone + "/tx"
             };
-            node.send(resetCmd);
+            node.send(resetR01Cmd);
+            
+            // Step 4: Reset D01 after R01 (saves power)
+            setTimeout(function() {
+                var resetD01Cmd = {
+                    payload: {
+                        fPort: 2,
+                        data: "02011111"  // D01 Low - reset polarity
+                    },
+                    topic: "application/irrigation/device/" + zone + "/tx"
+                };
+                node.send(resetD01Cmd);
+            }, 500); // 500ms after R01 reset
         }, 1000); // 1000ms after pulse command
     }, 500); // 500ms delay between commands
 
@@ -865,26 +897,26 @@ tailscale up --advertise-routes=192.168.1.0/24 --accept-routes
 
 ### 6.1 Complete System Cost (3 Zones)
 
-| Component                     | Qty | Unit Price | Total      |
-| ----------------------------- | --- | ---------- | ---------- |
-| **Gateway & Central**         |     |            |            |
-| LPS8v2 LoRaWAN Gateway        | 1   | 250€       | 250€       |
-| Raspberry Pi (Node-RED)       | 1   | 100€       | 100€       |
-| **Per Zone (×3)**             |     |            |            |
-| Dragino SE01-LB Sensor        | 3   | 150€       | 450€       |
-| LT-22222-L LoRaWAN Controller | 3   | 150€       | 450€       |
-| S-392T-3W Latching Valve      | 3   | 200€       | 600€       |
-| Finder 55.34.9.012.0040 Relay | 3   | 15€        | 45€        |
-| Finder 94.04 Relay Socket     | 3   | 5€         | 15€        |
-| Finder 99.02.9.024.99 Suppressor | 3   | 8€         | 24€        |
-| 2A Fuse + Holder             | 3   | 3€         | 9€         |
-| Powery 12V 9Ah AGM/Gel        | 3   | 25€        | 75€        |
+| Component                                                                                                                | Qty | Unit Price | Total      |
+| ------------------------------------------------------------------------------------------------------------------------ | --- | ---------- | ---------- |
+| **Gateway & Central**                                                                                                    |     |            |            |
+| LPS8v2 LoRaWAN Gateway                                                                                                   | 1   | 250€       | 250€       |
+| Raspberry Pi (Node-RED)                                                                                                  | 1   | 100€       | 100€       |
+| **Per Zone (×3)**                                                                                                        |     |            |            |
+| Dragino SE01-LB Sensor                                                                                                   | 3   | 150€       | 450€       |
+| LT-22222-L LoRaWAN Controller                                                                                            | 3   | 150€       | 450€       |
+| S-392T-3W Latching Valve                                                                                                 | 3   | 200€       | 600€       |
+| Finder 55.34.9.012.0040 Relay                                                                                            | 3   | 15€        | 45€        |
+| Finder 94.04 Relay Socket                                                                                                | 3   | 5€         | 15€        |
+| Finder 99.02.9.024.99 Suppressor                                                                                         | 3   | 8€         | 24€        |
+| 2A Fuse + Holder                                                                                                         | 3   | 3€         | 9€         |
+| Powery 12V 9Ah AGM/Gel                                                                                                   | 3   | 25€        | 75€        |
 | [WATTSTUNDE WS10-M Solar Kit](https://solarkontor.de/10W-Solar-Inselanlage-Bausatz-WATTSTUNDE-3A-Solar-Laderegler-PEKO3) | 3   | 40€        | 120€       |
-| PEKO3 Controller (in kit)     | -   | -          | included   |
-| Weatherproof Enclosures       | 3   | 40€        | 120€       |
-| **Installation**              |     |            |            |
-| Cables and Fittings           | -   | 150€       | 150€       |
-| **TOTAL SYSTEM COST**         |     |            | **2,303€** |
+| PEKO3 Controller (in kit)                                                                                                | -   | -          | included   |
+| Weatherproof Enclosures                                                                                                  | 3   | 40€        | 120€       |
+| **Installation**                                                                                                         |     |            |            |
+| Cables and Fittings                                                                                                      | -   | 150€       | 150€       |
+| **TOTAL SYSTEM COST**                                                                                                    |     |            | **2,303€** |
 
 ### 6.2 Annual Operating Costs
 
@@ -926,12 +958,14 @@ tailscale up --advertise-routes=192.168.1.0/24 --accept-routes
 ### 7.1 Preventive Maintenance Schedule
 
 **Monthly (Remote):**
+
 - [ ] Check battery voltages via dashboard
 - [ ] Verify LoRaWAN connectivity (all devices)
 - [ ] Review irrigation logs and anomalies
 - [ ] Test manual valve controls
 
 **Quarterly (Field Visit):**
+
 - [ ] Clean solar panels
 - [ ] Inspect weatherproof enclosures
 - [ ] Test valve operation manually
@@ -939,6 +973,7 @@ tailscale up --advertise-routes=192.168.1.0/24 --accept-routes
 - [ ] Check cable connections
 
 **Annually (Professional Service):**
+
 - [ ] Replace valve O-rings and seals
 - [ ] Test system under full pressure
 - [ ] Update firmware on all devices
@@ -952,11 +987,11 @@ Diagnostics:
 - Check battery voltage (should be >11V)
 - Verify LoRaWAN connectivity (RSSI)
 - Test with improved AT command sequence:
-  AT+RO1TIME=65535  # Set RO1 to indefinite duration
-  AT+RO2TIME=200    # Set RO2 to 200ms pulse
-  AT+RO1=1          # Set polarity
-  AT+RO2=1          # Pulse valve
-  AT+RO1=0          # Reset polarity
+  AT+RO1TIME=65535 # Set RO1 to indefinite duration
+  AT+RO2TIME=200 # Set RO2 to 200ms pulse
+  AT+RO1=1 # Set polarity
+  AT+RO2=1 # Pulse valve
+  AT+RO1=0 # Reset polarity
 
 Solutions:
 
