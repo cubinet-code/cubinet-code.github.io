@@ -307,6 +307,7 @@ The LT-22222-L controller provides two types of outputs with different current r
 **Design Specification:**
 
 For reliable valve control, the system uses a hybrid approach:
+
 - **Digital Output D01:** Controls polarity switching by powering the DPDT relay (86mA relay coil)
 - **Relay Output R01:** Controls current flow to the valve (2A valve coil current)
 
@@ -314,7 +315,7 @@ This design leverages both output types optimally: D01's capability for relay co
 
 **System Architecture:**
 
-- **Power Flow:** 
+- **Power Flow:**
   - **Controller Power:** Solar Panel → PEKO3 Charge Controller → Battery & Load Output (3A) → LT-22222-L
   - **Valve Power:** Solar Panel → PEKO3 Charge Controller → Battery & Load Output (3A) → DPDT Relay COM2 → Valve Circuit
 - **Control Strategy:** D01 controls DPDT relay polarity, R01 controls current flow to valve
@@ -337,6 +338,24 @@ The valve control system uses a DPDT relay configuration where:
 **Finder 55.34.9.012.0040 DPDT Relay Pinout:**
 
 ![Finder Relay Pinout](images/finder_pinout.png)
+
+**Wiring Connections Table:**
+
+| From                   | To                           | Description                              |
+| ---------------------- | ---------------------------- | ---------------------------------------- |
+| **Power Supply**       |                              |                                          |
+| +12V                   | LT-22222-L VIN               | Controller power supply                  |
+| GND                    | LT-22222-L GND               | Controller ground                        |
+| GND                    | DPDT Relay Pin 11 (COM1)     | Common GND for valve polarity switching  |
+| +12V                   | DPDT Relay Pin 21 (COM2)     | Common +12V for valve polarity switching |
+| GND                    | DPDT Relay Pin 14 (A2)       | DPDT Relay coil return                   |
+| **Controller/Relay**   |                              |                                          |
+| LT-22222-L D01         | DPDT Relay Pin 13 (A1)       | Digital output controls relay coil       |
+| DPDT Relay Pin 12 (NC) | S-392T-3W Terminal 1 (BLACK) | DPDT to common Valve BLACK               |
+| DPDT Relay Pin 14 (NO) | LT-22222-L RO1-2 (COM)       | DPDT to RO1 COM                          |
+| DPDT Relay Pin 22 (NC) | LT-22222-L RO1-2 (COM)       | DPDT to RO1 COM                          |
+| DPDT Relay Pin 24 (NO) | S-392T-3W Terminal 1 (BLACK) | DPDT to common Valve BLACK               |
+| LT-22222-L RO1-1 (NO)  | S-392T-3W Terminal 2 (RED)   | RO1 to Valve                             |
 
 ### 2.9.2 Simulation Results
 
@@ -645,7 +664,7 @@ if (moisture < dry_threshold && valve_status !== "OPEN") {
                 topic: "application/irrigation/device/" + zone + "/tx"
             };
             node.send(resetR01Cmd);
-            
+
             // Step 4: Reset D01 after R01 (saves power)
             setTimeout(function() {
                 var resetD01Cmd = {
@@ -701,7 +720,7 @@ if (moisture < dry_threshold && valve_status !== "OPEN") {
                 topic: "application/irrigation/device/" + zone + "/tx"
             };
             node.send(resetR01Cmd);
-            
+
             // Step 4: Reset D01 after R01 (saves power)
             setTimeout(function() {
                 var resetD01Cmd = {
@@ -768,7 +787,7 @@ if (command === "OPEN") {
                 topic: "application/irrigation/device/" + zone + "/tx"
             };
             node.send(resetR01Cmd);
-            
+
             // Step 4: Reset D01 after R01 (saves power)
             setTimeout(function() {
                 var resetD01Cmd = {
@@ -816,7 +835,7 @@ if (command === "OPEN") {
                 topic: "application/irrigation/device/" + zone + "/tx"
             };
             node.send(resetR01Cmd);
-            
+
             // Step 4: Reset D01 after R01 (saves power)
             setTimeout(function() {
                 var resetD01Cmd = {
