@@ -64,40 +64,19 @@ This document provides a complete design and implementation guide for a battery-
 
 ### 2.1 Dragino SE01-LB Soil Moisture Sensor
 
-**Measurement Capabilities:**
+For complete specifications, installation guide, and configuration details, refer to the official product page:
 
-- Soil Moisture: 0-100.00 V/V % (Volumetric Water Content)
-- Soil Temperature: -40°C to 85°C
-- Soil Electrical Conductivity: 0-20,000 µS/cm
+**[SE01-LB LoRaWAN Soil Moisture & EC Sensor](https://www.dragino.com/products/agriculture-weather-station/item/277-se01-lb.html)**
 
-**Accuracy:**
+**Key Features for This Application:**
 
-- Moisture: ±3% (0-53%), ±5% (>53%)
-- Temperature: ±0.3°C (-10°C to 50°C)
-- EC: 2% full scale
+- **Measurements:** Soil moisture (0-100%), temperature (-40°C to 85°C), EC (0-20,000 µS/cm)
+- **Accuracy:** ±3% moisture (0-53%), ±5% (>53%), ±0.3°C temperature
+- **Power:** 8500mAh Li/SOCl2 battery, 5-year life, self-powered
+- **Communication:** LoRaWAN 1.0.3 Class A, EU868, Bluetooth v5.1 config
+- **Installation:** IP66 waterproof, 20-30cm soil depth, no external power required
 
-**Power & Battery:**
-
-- Power Source: 8500mAh Li/SOCl2 battery (replaceable)
-- Battery Life: Up to 5 years
-- Ultra-low power consumption
-- No external power required
-
-**Communication:**
-
-- LoRaWAN 1.0.3 Class A
-- Frequency: EU868, US915, AU915, AS923, etc.
-- Bluetooth v5.1 for configuration
-- Over-the-air (OTA) firmware updates
-
-**Physical:**
-
-- Dimensions: 195 x 125 x 55 mm
-- Weight: 420g
-- IP66 Waterproof enclosure
-- Operating Temperature: -40°C to 85°C
-
-_Note: SE01-LS variant available with solar panel + 3000mAh Li-ion battery_
+_Note: SE01-LS variant available with solar panel + 3000mAh Li-ion battery for extended operation_
 
 ### 2.2 S-392T-3W Latching Valve
 
@@ -125,99 +104,57 @@ _Note: SE01-LS variant available with solar panel + 3000mAh Li-ion battery_
 
 ### 2.3 LT-22222-L LoRaWAN Controller
 
-**Power Specifications:**
+For complete specifications, wiring diagrams, and configuration details, refer to the official documentation:
 
-- Input Voltage: 7-24V DC (using 12V)
-- Sleep Current: 4mA @ 12V (official datasheet specification)
-- Active Current: ~20mA @ 12V (brief periods)
-- LoRaWAN TX: ~100mA for 5 seconds per transmission
-- Idle Power: 0.048W (4mA × 12V)
+**[LT-22222-L User Manual - Terminals & Specifications](https://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/LT-22222-L/#H2.2Terminals)**
 
-**I/O Specifications:**
+**Key Features for This Application:**
 
-- **Relay Outputs (RECOMMENDED):** 2x (RO1, RO2) rated 5A@250VAC/30VDC - Use for valve control
-- **Digital Outputs:** 2x (DO1, DO2) NPN type, max 450mA each - NOT suitable for valve control
-- **Output Logic:** INVERTED (DO=1 means LOW/GND, DO=0 means HIGH/floating)
-- **Pulse Mode:** Configurable pulse duration for relay outputs (20ms to 65535ms)
-- **Digital Inputs:** 2x for sensors/feedback (max 50V)
-- **Analog Inputs:** 2x (0-20mA or 0-30V)
-
-**Communication:**
-
-- LoRaWAN Region: EU868
-- Range: 2-5km line of sight
-- Adaptive Data Rate: Yes
-- Security: AES128 encryption
+- **Power:** 7-24V DC input, 4mA sleep current @ 12V
+- **Relay Outputs:** 2x (RO1, RO2) rated 5A@250VAC/30VDC - for valve control
+- **Digital Outputs:** 2x (DO1, DO2) NPN type, max 450mA each - for relay control
+- **LoRaWAN:** EU868, 2-5km range, AES128 encryption
+- **Configuration:** AT commands via serial interface
 
 ### 2.4 Solar Panel and Charge Controller Specifications
 
-**WATTSTUNDE WS10-M Solar Panel:**
+For complete specifications, installation guide, and technical details, refer to the official product page:
 
-- Nominal Power (Pmpp): 10Wp
-- Module Type: Monocrystalline, 36 cells
-- Open Circuit Voltage (Voc): 21.96V
-- Voltage at Max Power (Vmpp): 17.82V
-- Short Circuit Current (Isc): 0.63A
-- Current at Max Power (Impp): 0.57A
-- Module Efficiency: 18%
-- Daily Energy Yield: 40Wh (average)
-- Dimensions: 295 x 295 x 20mm
-- Weight: 1.7kg
-- Junction Box: IP65 weatherproof
-- Features: Bypass diodes for partial shading tolerance
+**[WATTSTUNDE WS10-M Solar Kit with PEKO3 Controller](https://solarkontor.de/10W-Solar-Inselanlage-Bausatz-WATTSTUNDE-3A-Solar-Laderegler-PEKO3)**
 
-**WATTSTUNDE PEKO3 Charge Controller:**
+**Key Features for This Application:**
 
-- Type: PWM (Pulse Width Modulation) with multi-stage charging
-- Max Solar Input: 3A / 50W (12V system)
-- Max Solar Voltage: 30V
-- Battery Voltage Range: 6-30V (supports 12V systems)
-- Charging Voltages: Bulk 14.4V, Float 13.8V, LVD 11.1V (corrected)
-- Load Output: 3A max (protected)
-- Operating Temperature: -40°C to +45°C
-- Dimensions: 90 x 48 x 18mm
-- Weight: 50g
+- **Solar Panel:** 10Wp monocrystalline, 40Wh daily yield, IP65 weatherproof
+- **Charge Controller:** PWM PEKO3, 3A/50W input, 3A load output with protection
+- **Battery Support:** 12V AGM/Gel optimized charging (14.4V bulk, 13.8V float)
+- **Protection:** Overcharge, deep discharge (LVD), temperature compensation
+- **Load Control:** Automatic disconnect/reconnect, perfect for LT-22222-L controller
+- **Installation:** Plug-and-play kit with all necessary components included
 
-**Protection Features:**
-
-- Overcharge protection with automatic disconnect
-- Deep discharge protection (LVD - Low Voltage Disconnect)
-- Temperature compensation for optimal charging
-- Reverse current protection at night
-- Short circuit and overload protection
-- Self-test function
-
-**Load Control:**
-
-- 3A load output perfect for LT-22222-L controller
-- Automatic disconnect at low battery (LVD)
-- Automatic reconnect when battery recovers (LVR)
-- Protects battery from deep discharge by loads
+**System Integration:**
+- Powers LT-22222-L controller via 3A load output
+- Maintains 9Ah AGM/Gel battery year-round
+- Essential for continuous off-grid operation
 
 ### 2.5 Sealed Lead-Acid Battery 9Ah
 
-**Electrical Specifications:**
+For complete specifications and technical details, refer to the official product page:
 
-- Voltage: 12V
-- Capacity: 9Ah (108Wh)
-- Type: AGM/Gel sealed lead-acid
-- Self-discharge: <3% per month
-- Cycle life: 300-500 cycles at 50% DoD
+**[12V 9Ah Sealed Lead-Acid Battery](https://de.rs-online.com/web/p/bleiakkus/1748858)**
 
-**Physical Specifications:**
+**Key Features for This Application:**
 
-- Dimensions: 151 x 65 x 94mm
-- Weight: ~2.5kg
-- Terminals: Faston F2 6.4mm
-- Position: Any orientation (sealed)
+- **Capacity:** 12V, 9Ah (108Wh), AGM/Gel sealed lead-acid
+- **Cycle Life:** 300-500 cycles at 50% DoD, <3% monthly self-discharge
+- **Form Factor:** Standard UPS battery format (151 x 65 x 94mm, ~2.5kg)
+- **Terminals:** Faston F2 6.4mm, suitable for any orientation
+- **Compatibility:** Works with PEKO3 charge controller, no special charger requirements
 
-**Key Advantages:**
-
-- Standard UPS battery format (widely available)
-- Multiple manufacturers (APC, CSB, Yuasa, etc.)
-- Lower cost than LiFePO4
-- No special charger requirements
-- Proven reliability in outdoor applications
+**System Integration:**
+- Provides 32-52 days autonomy without solar (50-80% DoD)
+- Maintained year-round by 10Wp solar panel
+- Standard format allows multiple manufacturer options (APC, CSB, Yuasa, etc.)
+- Lower cost than LiFePO4 with proven outdoor reliability
 
 ### 2.6 System Voltage Reference Table
 
@@ -264,10 +201,10 @@ _Note: SE01-LS variant available with solar panel + 3000mAh Li-ion battery_
 - S-392T-3W pulse: 12V × 2A × 0.05s = 1.2 Watt-seconds = 0.000333Wh per operation ✓
 - Valve operations: Assume 4 operations/day = 4 × 0.000333Wh = 0.001332Wh per day
 - LT-22222-L sleep: 4mA × 12V × 24h = 1.152Wh per day
-- Relay coil power: 12V × 25mA × 0.2s × 4/day = 0.0024Wh per day (200ms pulses)
+- Relay coil power: 12V × 86mA × 0.2s × 4/day = 0.0083Wh per day (200ms pulses)
 - LoRaWAN transmissions: 100mA × 12V × 5s × 24/day = 0.04Wh per day
 - SE01-LB sensor: 0Wh (self-powered with 5-year battery life)
-- Total daily consumption: ~1.196Wh per day (1.152 + 0.04 + 0.001332 + 0.0024)
+- Total daily consumption: ~1.202Wh per day (1.152 + 0.04 + 0.001332 + 0.0083)
 
 Note: SE01-LB sensor has its own 8500mAh Li/SOCl2 battery with 5-year life,
 so it doesn't add to the system power consumption.
@@ -279,8 +216,8 @@ so it doesn't add to the system power consumption.
 - Usable capacity (50% DoD recommended): 86.4Wh × 0.5 = 43.2Wh
 - Usable capacity (80% DoD emergency): 86.4Wh × 0.8 = 69.1Wh
 - System efficiency factor: 0.9 (10% losses)
-- Autonomy at 50% DoD: (43.2Wh × 0.9) ÷ 1.196Wh = 32.5 days without solar
-- Autonomy at 80% DoD: (69.1Wh × 0.9) ÷ 1.196Wh = 52.1 days without solar
+- Autonomy at 50% DoD: (43.2Wh × 0.9) ÷ 1.202Wh = 32.3 days without solar
+- Autonomy at 80% DoD: (69.1Wh × 0.9) ÷ 1.202Wh = 51.8 days without solar
 - Note: AGM/Gel batteries should not regularly exceed 50% DoD for longevity
 
 **Solar Sizing (WATTSTUNDE WS10-M):**
@@ -288,9 +225,9 @@ so it doesn't add to the system power consumption.
 - Panel generates 40Wh daily (manufacturer spec, optimal conditions)
 - Charging efficiency losses: 40Wh × 0.85 = 34Wh usable daily
 - Winter derating factor: 34Wh × 0.6 = 20.4Wh (worst case)
-- Daily consumption: 1.196Wh
-- Net surplus (summer): 34Wh - 1.196Wh = +32.8Wh daily
-- Net surplus (winter): 20.4Wh - 1.196Wh = +19.2Wh daily
+- Daily consumption: 1.202Wh
+- Net surplus (summer): 34Wh - 1.202Wh = +32.8Wh daily
+- Net surplus (winter): 20.4Wh - 1.202Wh = +19.2Wh daily
 - Battery recharge time from 50% DoD: 43.2Wh ÷ 19.2Wh = 2.3 days (winter)
 - Result: System is energy-positive year-round with proper installation
 - Note: Solar is essential with 9Ah battery for continuous operation
